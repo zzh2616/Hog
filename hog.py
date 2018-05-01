@@ -22,7 +22,16 @@ def roll_dice(num_rolls, dice=six_sided):
     # These assert statements ensure that num_rolls is a positive integer.
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
     assert num_rolls > 0, 'Must roll at least once.'
-    "*** YOUR CODE HERE ***"
+    sum_score = 0
+    pig_flag = 0  # flag for pig out!
+    for i in range(0, num_rolls):
+        current_score = dice()
+        if current_score == 1:
+            pig_flag = 1
+        sum_score += current_score
+    if pig_flag == 1:
+        sum_score = 1
+    return sum_score
 
 
 def take_turn(num_rolls, opponent_score, dice=six_sided):
