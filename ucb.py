@@ -1,4 +1,5 @@
-"""The UCB module contains functions specific to 61A projects at UC Berkeley."""
+"""The UCB module contains functions specific to 61A projects at UC Berkeley.
+"""
 
 import code
 import functools
@@ -20,11 +21,14 @@ def main(fn):
     Use this instead of the typical __name__ == "__main__" predicate.
     """
     if inspect.stack()[1][0].f_locals['__name__'] == '__main__':
-        args = sys.argv[1:] # Discard the script name from command line
-        fn(*args) # Call the main function
+        args = sys.argv[1:]  # Discard the script name from command line
+        fn(*args)  # Call the main function
     return fn
 
+
 _PREFIX = ''
+
+
 def trace(fn):
     """A decorator that prints a function's name, its arguments, and its return
     values each time the function is called. For example,
@@ -70,7 +74,8 @@ def interact(msg=None):
     """Start an interactive interpreter session in the current environment.
 
     On Unix:
-      <Control>-D exits the interactive session and returns to normal execution.
+      <Control>-D exits the interactive session and returns to normal
+      execution.
     In Windows:
       <Control>-Z <Enter> exists the interactive session and returns to normal
       execution.
