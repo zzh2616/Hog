@@ -69,7 +69,7 @@ The command above runs all the tests until an error occurs, at which point it wi
 
 Within hog.py, we've also provided a way to call certain functions interactively from the terminal:
 
-      python3 hog.py -i roll_dice 
+      python3 hog.py -i roll_dice
 
 
 ## Phase 1: Simulator
