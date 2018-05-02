@@ -18,15 +18,15 @@ To spice up the game, we will play with some special rules:
 This project includes six files, but all of your changes will be made to the first one, and it is the only one you should need to read and understand. To get started, download all of the project code as a zip archive.
 
     hog.py                  A starter implementation of Hog.
-    
+
     dice.py                 Functions for rolling dice.
-    
+
     ucb.py                  Utility functions for CS 61A.
-    
+
     hog_gui.py              A graphical user interface for Hog.
-    
+
     hog_grader.py           Tests to check the correctness of your implementation.
-        
+
     autograder.py           Utility functions for grading.
 
 ## Logistics
@@ -69,7 +69,7 @@ The command above runs all the tests until an error occurs, at which point it wi
 
 Within hog.py, we've also provided a way to call certain functions interactively from the terminal:
 
-      python3 hog.py -i roll_dice
+      python3 hog.py -i roll_dice 
 
 
 ## Phase 1: Simulator
@@ -186,7 +186,7 @@ Once you have implemented this strategy, change run_experiments to evaluate your
 
 1. Rolls 0 if it would cause a beneficial swap that gains points.
 2. Rolls BASELINE_NUM_ROLLS if rolling 0 would cause a harmful swap that loses points.
-3. If rolling 0 would not cause a swap, then do so if it would give at least BACON_MARGIN points and roll BASELINE_NUM_ROLLS otherwise. 
+3. If rolling 0 would not cause a swap, then do so if it would give at least BACON_MARGIN points and roll BASELINE_NUM_ROLLS otherwise.
 
 Test your implementation before moving on:
 
@@ -202,7 +202,7 @@ At this point, run the entire autograder to see if there are any tests that don'
 
 - Find a way to leave your opponent with four-sided dice more often.
 - If you are in the lead, you might take fewer risks. If you are losing, you might take bigger risks to catch up.
-- Vary your rolls based on whether you will be rolling four-sided or six- sided dice. 
+- Vary your rolls based on whether you will be rolling four-sided or six- sided dice.
 
 Note: You may want to increase the number of samples to improve the approximation of your win rate. The course autograder will compute your exact average win rate (without sampling error) for you once you submit your project, and it will send it to you in an email.
 
