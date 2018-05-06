@@ -164,7 +164,13 @@ def make_averaged(fn, num_samples=1000):
     - In the other, the player rolls a 5 and 6, scoring 11.
     Thus, the average value is 6.0.
     """
-    "*** YOUR CODE HERE ***"
+    def average_fn(*args):  # define a new function
+        sum = 0
+        for i in range(0, num_samples):
+            sum += fn(*args)  # use the same parameter/arguments as average_fn
+        return sum/num_samples
+
+    return average_fn
 
 
 def max_scoring_num_rolls(dice=six_sided):
@@ -186,7 +192,16 @@ def max_scoring_num_rolls(dice=six_sided):
     10 dice scores 30.0 on average
     10
     """
-    "*** YOUR CODE HERE ***"
+    max_avg = 0
+    max_dice_roll = 1
+    for num_rolls in range(1, 11):
+        curr_avg = make_averaged(roll_dice, num_samples=1000)(num_rolls, dice)
+        if curr_avg > max_avg:
+            max_avg = curr_avg
+            max_dice_roll = num_rolls
+        print(num_rolls, 'dice scores', curr_avg, 'on average')
+    # print('dice number ', max_dice_roll, ' scores most on average')
+    return max_dice_roll
 
 
 def winner(strategy0, strategy1):
@@ -207,7 +222,7 @@ def average_win_rate(strategy, baseline=always_roll(BASELINE_NUM_ROLLS)):
 
 def run_experiments():
     """Run a series of strategy experiments and report results."""
-    if True:  # Change to False when done finding max_scoring_num_rolls
+    if False:  # Change to False when done finding max_scoring_num_rolls
         six_sided_max = max_scoring_num_rolls(six_sided)
         print('Max scoring num rolls for six-sided dice:', six_sided_max)
         four_sided_max = max_scoring_num_rolls(four_sided)
@@ -222,7 +237,7 @@ def run_experiments():
     if False:  # Change to True to test swap_strategy
         print('swap_strategy win rate:', average_win_rate(swap_strategy))
 
-    if False:  # Change to True to test final_strategy
+    if True:  # Change to True to test final_strategy
         print('final_strategy win rate:', average_win_rate(final_strategy))
 
     "*** You may add additional experiments as you wish ***"
@@ -241,8 +256,10 @@ def bacon_strategy(score, opponent_score):
     >>> bacon_strategy(50, 70)
     0
     """
-    "*** YOUR CODE HERE ***"
-    return 5  # Replace this statement
+    rolls = BASELINE_NUM_ROLLS
+    if (max(int(opponent_score/10), opponent_score % 10) + 1) >= BACON_MARGIN:
+        rolls = 0
+    return rolls
 
 
 def swap_strategy(score, opponent_score):
@@ -260,18 +277,35 @@ def swap_strategy(score, opponent_score):
     >>> swap_strategy(12, 12) # Baseline
     5
     """
-    "*** YOUR CODE HERE ***"
-    return 5  # Replace this statement
+    rolls = BASELINE_NUM_ROLLS
+    if (score + max(int(opponent_score/10), opponent_score % 10) + 1) * 2 == opponent_score:
+        rolls = 0
+    elif score + max(int(opponent_score/10), opponent_score % 10) + 1 == 2 * opponent_score:
+        rolls = BASELINE_NUM_ROLLS
+    elif (max(int(opponent_score/10), opponent_score % 10) + 1) >= BACON_MARGIN:
+        rolls = 0
+    return rolls
 
 
 def final_strategy(score, opponent_score):
-    """Write a brief description of your final strategy.
-
-    *** YOUR DESCRIPTION HERE ***
+    """This strategy bases on the previous swap_strategy method.
+    Additionally, it rolls 0 dice when it would result in a Hog wild to the opponent,
+    i.e. the sum of score and opponent's score after Free bacon is a multiple of seven.
+    Moreover, when player 0 is in the lead or close to the goal, roll 0 dice to lower risks.
     """
-    "*** YOUR CODE HERE ***"
-    return 5  # Replace this statement
 
+    rolls = BASELINE_NUM_ROLLS
+    if (score + max(int(opponent_score / 10), opponent_score % 10) + 1) * 2 == opponent_score:
+        rolls = 0
+    if score + max(int(opponent_score / 10), opponent_score % 10) + 1 == 2 * opponent_score:
+        rolls = BASELINE_NUM_ROLLS
+    elif (max(int(opponent_score / 10), opponent_score % 10) + 1) >= BACON_MARGIN:
+        rolls = 0
+    elif (score + max(int(opponent_score / 10), opponent_score % 10) + 1 + opponent_score) % 7 == 0:
+        rolls = 0
+    elif score - opponent_score > 50 or score > 90:
+        rolls = 0
+    return rolls
 
 ##########################
 # Command Line Interface #
@@ -279,6 +313,7 @@ def final_strategy(score, opponent_score):
 
 # Note: Functions in this section do not need to be changed.  They use features
 #       of Python not yet covered in the course.
+
 
 def get_int(prompt, min):
     """Return an integer greater than or equal to MIN, given by the user."""

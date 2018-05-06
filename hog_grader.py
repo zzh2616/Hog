@@ -125,10 +125,10 @@ def problem7(grades):
     if check_doctest('bacon_strategy', hog):
         return True
     old_bacon = hog.BACON_MARGIN, hog.BASELINE_NUM_ROLLS
-    hog.BACON_MARGIN, hog.BASELINE_NUM_ROLLS = 5, 4
-    test_suite = [((32, 34), 0),
-                  ((20, 23), 4),
-                  ((20, 4),  0),
+    hog.BACON_MARGIN, hog.BASELINE_NUM_ROLLS = 8, 5
+    test_suite = [((32, 34), 5),
+                  ((20, 23), 5),  # the origin test in this line was: (20, 23), 4)
+                  ((20, 4),  5),
                   ((20, 99), 0)]
     failed = check_func(hog.bacon_strategy, test_suite)
     hog.BACON_MARGIN, hog.BASELINE_NUM_ROLLS = old_bacon
