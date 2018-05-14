@@ -5,6 +5,12 @@ from ucb import main, trace, log_current_line, interact
 
 GOAL_SCORE = 100  # The goal of Hog is to score 100 points.
 
+
+def bacon_score(opponent_score):
+    """a function returns free bacon score"""
+    return max(int(opponent_score / 10), opponent_score % 10) + 1
+
+
 ######################
 # Phase 1: Simulator #
 ######################
@@ -50,7 +56,7 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
         score = roll_dice(num_rolls, dice)
     else:
         # free bacon rule
-        score = max(int(opponent_score / 10), opponent_score % 10) + 1
+        score = bacon_score(opponent_score)
     return score
 
 # Playing a game
@@ -257,7 +263,7 @@ def bacon_strategy(score, opponent_score):
     0
     """
     rolls = BASELINE_NUM_ROLLS
-    if (max(int(opponent_score/10), opponent_score % 10) + 1) >= BACON_MARGIN:
+    if bacon_score(opponent_score) >= BACON_MARGIN:
         rolls = 0
     return rolls
 
@@ -278,20 +284,24 @@ def swap_strategy(score, opponent_score):
     5
     """
     rolls = BASELINE_NUM_ROLLS
-    if (score + max(int(opponent_score/10), opponent_score % 10) + 1) * 2 == opponent_score:
+    if (score + bacon_score(opponent_score)) * 2 == opponent_score:
         rolls = 0
-    elif score + max(int(opponent_score/10), opponent_score % 10) + 1 == 2 * opponent_score:
-        rolls = BASELINE_NUM_ROLLS
-    elif (max(int(opponent_score/10), opponent_score % 10) + 1) >= BACON_MARGIN:
-        rolls = 0
+    if ((bacon_score(opponent_score) >= BACON_MARGIN and
+        (score + bacon_score(opponent_score)) != 2 * opponent_score) or
+            (score + bacon_score(opponent_score)) * 2 == opponent_score):
+            rolls = 0
     return rolls
 
 
 def final_strategy(score, opponent_score):
-    """This strategy bases on the previous swap_strategy method.
-    Additionally, it rolls 0 dice when it would result in a Hog wild to the opponent,
-    i.e. the sum of score and opponent's score after Free bacon is a multiple of seven.
-    Moreover, when player 0 is in the lead or close to the goal, roll 0 dice to lower risks.
+    """
+    1. When leading: a. avoid harmful swine-swap with bacon strategy.
+                     b. leave opponent with 4-sideddice with bacon strategy.
+                     At last, roll max score number of dice
+    2. When behind: a. trigger swine-swap if possible with bacon strategy.
+                    b. roll max score number of dice.
+                    At last, leave opponent with 4-sided dice with bacon
+                    strategy.
     """
 
     rolls = BASELINE_NUM_ROLLS
