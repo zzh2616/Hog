@@ -152,7 +152,7 @@ def always_roll(n):
 # Experiments
 
 
-def make_averaged(fn, num_samples=1000):
+def make_averaged(fn, num_samples=10000):
     """Return a function that returns the average_value of FN when called.
 
     To implement this function, you will have to use *args syntax, a new Python
@@ -201,11 +201,11 @@ def max_scoring_num_rolls(dice=six_sided):
     max_avg = 0
     max_dice_roll = 1
     for num_rolls in range(1, 11):
-        curr_avg = make_averaged(roll_dice, num_samples=1000)(num_rolls, dice)
+        curr_avg = make_averaged(roll_dice, num_samples=10000)(num_rolls, dice)
         if curr_avg > max_avg:
             max_avg = curr_avg
             max_dice_roll = num_rolls
-        print(num_rolls, 'dice scores', curr_avg, 'on average')
+        # print(num_rolls, 'dice scores', curr_avg, 'on average')
     # print('dice number ', max_dice_roll, ' scores most on average')
     return max_dice_roll
 
@@ -295,26 +295,26 @@ def swap_strategy(score, opponent_score):
 
 def final_strategy(score, opponent_score):
     """
-    1. When leading: a. avoid harmful swine-swap with bacon strategy.
-                     b. leave opponent with 4-sideddice with bacon strategy.
-                     At last, roll max score number of dice
+    1. When leading: a. leave opponent with 4-sideddice with bacon strategy,
+                        but avoid harmful swap.
+                     b. roll baseline number
     2. When behind: a. trigger swine-swap if possible with bacon strategy.
                     b. roll max score number of dice.
-                    At last, leave opponent with 4-sided dice with bacon
-                    strategy.
     """
 
     rolls = BASELINE_NUM_ROLLS
-    if (score + max(int(opponent_score / 10), opponent_score % 10) + 1) * 2 == opponent_score:
-        rolls = 0
-    if score + max(int(opponent_score / 10), opponent_score % 10) + 1 == 2 * opponent_score:
-        rolls = BASELINE_NUM_ROLLS
-    elif (max(int(opponent_score / 10), opponent_score % 10) + 1) >= BACON_MARGIN:
-        rolls = 0
-    elif (score + max(int(opponent_score / 10), opponent_score % 10) + 1 + opponent_score) % 7 == 0:
-        rolls = 0
-    elif score - opponent_score > 50 or score > 90:
-        rolls = 0
+    if (score + bacon_score(opponent_score)) != 2*opponent_score:
+        if score > opponent_score:
+            if ((score + opponent_score + bacon_score(opponent_score)) % 7 == 0
+               or bacon_score(opponent_score) > BACON_MARGIN
+               or score - opponent_score >= 45
+               or score >= 80):
+                rolls = 0
+        else:
+            if (2*(score + bacon_score(opponent_score)) == opponent_score
+               or bacon_score(opponent_score) > BACON_MARGIN
+               or (score + opponent_score + bacon_score(opponent_score)) % 7 == 0):
+                rolls = 0
     return rolls
 
 ##########################
