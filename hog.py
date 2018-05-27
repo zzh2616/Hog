@@ -205,7 +205,7 @@ def max_scoring_num_rolls(dice=six_sided):
         if curr_avg > max_avg:
             max_avg = curr_avg
             max_dice_roll = num_rolls
-        # print(num_rolls, 'dice scores', curr_avg, 'on average')
+        print(num_rolls, 'dice scores', curr_avg, 'on average')
     # print('dice number ', max_dice_roll, ' scores most on average')
     return max_dice_roll
 
@@ -295,20 +295,20 @@ def swap_strategy(score, opponent_score):
 
 def final_strategy(score, opponent_score):
     """
-    1. When leading: a. leave opponent with 4-sideddice with bacon strategy,
-                        but avoid harmful swap.
-                     b. roll baseline number
-    2. When behind: a. trigger swine-swap if possible with bacon strategy.
-                    b. roll max score number of dice.
+    tools to play with: free bacon
+    strategy should find the right time to use it...
     """
 
-    rolls = BASELINE_NUM_ROLLS
+    if(score + opponent_score) % 7 == 0:
+        rolls = 4
+    else:
+        rolls = 6
     if (score + bacon_score(opponent_score)) != 2*opponent_score:
         if score > opponent_score:
             if ((score + opponent_score + bacon_score(opponent_score)) % 7 == 0
                or bacon_score(opponent_score) > BACON_MARGIN
-               or score - opponent_score >= 45
-               or score >= 80):
+               or score - opponent_score >= 40
+               or score >= 85):
                 rolls = 0
         else:
             if (2*(score + bacon_score(opponent_score)) == opponent_score
