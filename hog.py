@@ -5,6 +5,12 @@ from ucb import main, trace, log_current_line, interact
 
 GOAL_SCORE = 100  # The goal of Hog is to score 100 points.
 
+
+def bacon_score(opponent_score):
+    """a function returns free bacon score"""
+    return max(int(opponent_score / 10), opponent_score % 10) + 1
+
+
 ######################
 # Phase 1: Simulator #
 ######################
@@ -50,7 +56,7 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
         score = roll_dice(num_rolls, dice)
     else:
         # free bacon rule
-        score = max(int(opponent_score / 10), opponent_score % 10) + 1
+        score = bacon_score(opponent_score)
     return score
 
 # Playing a game
@@ -146,7 +152,7 @@ def always_roll(n):
 # Experiments
 
 
-def make_averaged(fn, num_samples=1000):
+def make_averaged(fn, num_samples=10000):
     """Return a function that returns the average_value of FN when called.
 
     To implement this function, you will have to use *args syntax, a new Python
@@ -195,7 +201,7 @@ def max_scoring_num_rolls(dice=six_sided):
     max_avg = 0
     max_dice_roll = 1
     for num_rolls in range(1, 11):
-        curr_avg = make_averaged(roll_dice, num_samples=1000)(num_rolls, dice)
+        curr_avg = make_averaged(roll_dice, num_samples=10000)(num_rolls, dice)
         if curr_avg > max_avg:
             max_avg = curr_avg
             max_dice_roll = num_rolls
@@ -257,7 +263,7 @@ def bacon_strategy(score, opponent_score):
     0
     """
     rolls = BASELINE_NUM_ROLLS
-    if (max(int(opponent_score/10), opponent_score % 10) + 1) >= BACON_MARGIN:
+    if bacon_score(opponent_score) >= BACON_MARGIN:
         rolls = 0
     return rolls
 
@@ -278,33 +284,37 @@ def swap_strategy(score, opponent_score):
     5
     """
     rolls = BASELINE_NUM_ROLLS
-    if (score + max(int(opponent_score/10), opponent_score % 10) + 1) * 2 == opponent_score:
+    if (score + bacon_score(opponent_score)) * 2 == opponent_score:
         rolls = 0
-    elif score + max(int(opponent_score/10), opponent_score % 10) + 1 == 2 * opponent_score:
-        rolls = BASELINE_NUM_ROLLS
-    elif (max(int(opponent_score/10), opponent_score % 10) + 1) >= BACON_MARGIN:
-        rolls = 0
+    if ((bacon_score(opponent_score) >= BACON_MARGIN and
+        (score + bacon_score(opponent_score)) != 2 * opponent_score) or
+            (score + bacon_score(opponent_score)) * 2 == opponent_score):
+            rolls = 0
     return rolls
 
 
 def final_strategy(score, opponent_score):
-    """This strategy bases on the previous swap_strategy method.
-    Additionally, it rolls 0 dice when it would result in a Hog wild to the opponent,
-    i.e. the sum of score and opponent's score after Free bacon is a multiple of seven.
-    Moreover, when player 0 is in the lead or close to the goal, roll 0 dice to lower risks.
+    """
+    tools to play with: free bacon
+    strategy should find the right time to use it...
     """
 
-    rolls = BASELINE_NUM_ROLLS
-    if (score + max(int(opponent_score / 10), opponent_score % 10) + 1) * 2 == opponent_score:
-        rolls = 0
-    if score + max(int(opponent_score / 10), opponent_score % 10) + 1 == 2 * opponent_score:
-        rolls = BASELINE_NUM_ROLLS
-    elif (max(int(opponent_score / 10), opponent_score % 10) + 1) >= BACON_MARGIN:
-        rolls = 0
-    elif (score + max(int(opponent_score / 10), opponent_score % 10) + 1 + opponent_score) % 7 == 0:
-        rolls = 0
-    elif score - opponent_score > 50 or score > 90:
-        rolls = 0
+    if(score + opponent_score) % 7 == 0:
+        rolls = 4
+    else:
+        rolls = 6
+    if (score + bacon_score(opponent_score)) != 2*opponent_score:
+        if score > opponent_score:
+            if ((score + opponent_score + bacon_score(opponent_score)) % 7 == 0
+               or bacon_score(opponent_score) > BACON_MARGIN
+               or score - opponent_score >= 40
+               or score >= 85):
+                rolls = 0
+        else:
+            if (2*(score + bacon_score(opponent_score)) == opponent_score
+               or bacon_score(opponent_score) > BACON_MARGIN
+               or (score + opponent_score + bacon_score(opponent_score)) % 7 == 0):
+                rolls = 0
     return rolls
 
 ##########################
