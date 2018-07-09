@@ -3,7 +3,7 @@
 This file uses many features of Python not yet covered in the course.  A lab
 later in the semester will review its implementation and let you extend it.
 """
-
+   
 import hog
 import dice
 from ucb import main
